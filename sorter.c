@@ -698,13 +698,14 @@ static char *compute_stats(Student *class_students, int num_students) {
 // ===========================
 
 static void show_error_dialog(GtkWindow *parent, const char *message) {
-    GtkWidget *dialog = gtk_message_dialog_new(parent,
-                                             GTK_DIALOG_MODAL,
-                                             GTK_MESSAGE_ERROR,
-                                             GTK_BUTTONS_OK,
-                                             "%s", message);
-    gtk_window_set_title(GTK_WINDOW(dialog), "Error");
-    g_signal_connect(dialog, "response", G_CALLBACK(gtk_widget_destroy), NULL);
+    GtkWidget *dialog = gtk_message_dialog_new(
+        parent,
+        GTK_DIALOG_MODAL,
+        GTK_MESSAGE_ERROR,
+        GTK_BUTTONS_OK,
+        "%s", message
+    );
+    g_signal_connect(dialog, "response", G_CALLBACK(gtk_window_destroy), NULL);
     gtk_widget_show(dialog);
 }
 
@@ -796,12 +797,12 @@ static void add_rule_dialog_response(GtkDialog *dialog, int response, gpointer u
         }
     }
     
-    gtk_widget_destroy(GTK_WIDGET(dialog));
+    gtk_window_destroy(GTK_WINDOW(dialog));
 }
 
 static void open_add_rule_dialog(GtkWindow *parent, Student *students, int num_students, 
-                               GArray *rules, GtkWidget *rule_textview, GtkNotebook *notebook,
-                               void (*update_tabs_callback)(GtkNotebook*, Student*, int, GArray*, int)) {
+                              GArray *rules, GtkWidget *rule_textview, GtkNotebook *notebook,
+                              void (*update_tabs_callback)(GtkNotebook*, Student*, int, GArray*, int)) {
     GtkWidget *dialog = gtk_dialog_new_with_buttons(
         "Add Rule",
         parent,
@@ -880,9 +881,9 @@ static void update_tabs(GtkNotebook *notebook, Student *students, int num_studen
     // Create tabs for each class
     for (int i = 0; i < num_classes; i++) {
         GtkWidget *treeview = create_student_treeview(classes[i], class_sizes[i]);
-        GtkWidget *scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+        GtkWidget *scrolled_window = gtk_scrolled_window_new();
         
-        gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrolled_window), treeview);
+        gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scrolled_window), treeview);
         gtk_widget_set_vexpand(scrolled_window, TRUE);
         
         // Create stats text view
@@ -895,7 +896,7 @@ static void update_tabs(GtkNotebook *notebook, Student *students, int num_studen
         gtk_text_buffer_set_text(buffer, stats_text, -1);
         
         GtkWidget *stats_frame = gtk_frame_new("Klassenstatistiken");
-        gtk_container_add(GTK_CONTAINER(stats_frame), stats_textview);
+        gtk_frame_set_child(GTK_FRAME(stats_frame), stats_textview);
         gtk_widget_set_margin_top(stats_frame, 5);
         gtk_widget_set_margin_bottom(stats_frame, 5);
         
@@ -968,7 +969,7 @@ static GtkWidget *create_sorter_window(GtkApplication *app, Student *students, i
     GtkWidget *notebook = gtk_notebook_new();
     gtk_box_append(GTK_BOX(vbox), notebook);
     
-    gtk_container_add(GTK_CONTAINER(window), vbox);
+    gtk_window_set_child(GTK_WINDOW(window), vbox);
     
     // Create rules array
     GArray *rules = g_array_new(FALSE, FALSE, sizeof(Rule));
@@ -1003,14 +1004,14 @@ static void file_chooser_response(GtkDialog *dialog, int response, gpointer user
         if (file) {
             char *path = g_file_get_path(file);
             if (path) {
-                gtk_entry_set_text(GTK_ENTRY(entry), path);
+                gtk_editable_set_text(GTK_EDITABLE(entry), path);
                 g_free(path);
             }
             g_object_unref(file);
         }
     }
     
-    gtk_widget_destroy(GTK_WIDGET(dialog));
+    gtk_window_destroy(GTK_WINDOW(dialog));
 }
 
 static void browse_button_clicked(GtkButton *button, gpointer user_data) {
@@ -1042,14 +1043,14 @@ static void start_button_clicked(GtkButton *button, gpointer user_data) {
     GtkWidget *num_classes_entry = GTK_WIDGET(g_object_get_data(G_OBJECT(button), "num_classes_entry"));
     GtkApplication *app = GTK_APPLICATION(g_object_get_data(G_OBJECT(button), "app"));
     
-    const char *file_path = gtk_entry_get_text(GTK_ENTRY(file_path_entry));
+    const char *file_path = gtk_editable_get_text(GTK_EDITABLE(file_path_entry));
     
     if (strlen(file_path) == 0) {
         show_error_dialog(GTK_WINDOW(window), "Please select a CSV file.");
         return;
     }
     
-    const char *num_classes_text = gtk_entry_get_text(GTK_ENTRY(num_classes_entry));
+    const char *num_classes_text = gtk_editable_get_text(GTK_EDITABLE(num_classes_entry));
     int num_classes = atoi(num_classes_text);
     
     if (num_classes <= 0) {
@@ -1108,13 +1109,13 @@ static void create_start_screen(GtkApplication *app) {
     gtk_grid_attach(GTK_GRID(grid), label_classes, 0, 1, 1, 1);
     
     GtkWidget *num_classes_entry = gtk_entry_new();
-    gtk_entry_set_text(GTK_ENTRY(num_classes_entry), "5");
+    gtk_editable_set_text(GTK_EDITABLE(num_classes_entry), "5");
     gtk_grid_attach(GTK_GRID(grid), num_classes_entry, 1, 1, 2, 1);
     
     GtkWidget *start_button = gtk_button_new_with_label("Start");
     gtk_grid_attach(GTK_GRID(grid), start_button, 1, 2, 1, 1);
     
-    gtk_container_add(GTK_CONTAINER(window), grid);
+    gtk_window_set_child(GTK_WINDOW(window), grid);
     
     // Set data for callbacks
     g_object_set_data(G_OBJECT(browse_button), "parent_window", window);
