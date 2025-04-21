@@ -1010,7 +1010,7 @@ static void file_chooser_response(GtkDialog *dialog, int response, gpointer user
         }
     }
     
-    gtk_window_destroy(GTK_WINDOW(dialog));
+    gtk_widget_destroy(GTK_WIDGET(dialog));
 }
 
 static void browse_button_clicked(GtkButton *button, gpointer user_data) {
@@ -1108,13 +1108,13 @@ static void create_start_screen(GtkApplication *app) {
     gtk_grid_attach(GTK_GRID(grid), label_classes, 0, 1, 1, 1);
     
     GtkWidget *num_classes_entry = gtk_entry_new();
-    gtk_editable_set_text(GTK_EDITABLE(num_classes_entry), "5");
+    gtk_entry_set_text(GTK_ENTRY(num_classes_entry), "5");
     gtk_grid_attach(GTK_GRID(grid), num_classes_entry, 1, 1, 2, 1);
     
     GtkWidget *start_button = gtk_button_new_with_label("Start");
     gtk_grid_attach(GTK_GRID(grid), start_button, 1, 2, 1, 1);
     
-    gtk_window_set_child(GTK_WINDOW(window), grid);
+    gtk_container_add(GTK_CONTAINER(window), grid);
     
     // Set data for callbacks
     g_object_set_data(G_OBJECT(browse_button), "parent_window", window);
