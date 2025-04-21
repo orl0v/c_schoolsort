@@ -24,13 +24,13 @@ jobs:
         update: true
         install: >-
           mingw-w64-x86_64-gcc
-          mingw-w64-x86_64-gtk3
+          mingw-w64-x86_64-gtk4
           mingw-w64-x86_64-pkg-config
           
     - name: Build
       shell: msys2 {0}
       run: |
-        gcc sorter.c -o sorter.exe `pkg-config --cflags --libs gtk+-3.0` -mwindows
+        gcc sorter.c -o sorter.exe `pkg-config --cflags --libs gtk4` -mwindows
         
     - name: Copy DLLs
       shell: msys2 {0}
