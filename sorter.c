@@ -10,6 +10,10 @@
 #include <windows.h>
 #endif
 
+#ifdef _WIN32
+#include <objbase.h>    // for OleInitialize, OleUninitialize
+#endif
+
 // ===========================
 // Data Model and Helper Types
 // ===========================
@@ -1103,6 +1107,11 @@ static void browse_button_clicked(GtkButton *button, gpointer user_data) {
         return;
     }
     g_print("File chooser dialog created successfully\n");
+
+#ifdef _WIN32
+    // Disable native file chooser to avoid COM issues
+    gtk_file_chooser_set_use_native(GTK_FILE_CHOOSER(dialog), FALSE);
+#endif
     
     g_print("Setting up file filters...\n");
     GtkFileFilter *filter = gtk_file_filter_new();
@@ -1255,9 +1264,13 @@ static void app_shutdown(GtkApplication *app, gpointer user_data) {
 }
 
 int main(int argc, char *argv[]) {
-#ifdef GDK_WINDOWING_WIN32
-    // initialize COM for the native file-chooser
-    CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+#ifdef _WIN32
+    // Initialize OLE/COM for IFileOpenDialog
+    HRESULT hr = OleInitialize(NULL);
+    if (FAILED(hr)) {
+        fprintf(stderr, "OleInitialize failed: 0x%08lx\n", hr);
+        // you can choose to abort here...
+    }
 #endif
 
     GtkApplication *app = gtk_application_new("com.example.schoolsort", G_APPLICATION_DEFAULT_FLAGS);
@@ -1267,8 +1280,8 @@ int main(int argc, char *argv[]) {
     int status = g_application_run(G_APPLICATION(app), argc, argv);
     g_object_unref(app);
 
-#ifdef GDK_WINDOWING_WIN32
-    CoUninitialize();
+#ifdef _WIN32
+    OleUninitialize();
 #endif
 
     return status;
