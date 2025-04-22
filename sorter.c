@@ -708,29 +708,36 @@ static GtkWidget *create_student_treeview(Student *students, int num_students) {
     GtkWidget *scrolled_window = gtk_scrolled_window_new();
     gtk_widget_set_vexpand(scrolled_window, TRUE);
     
-    GListStore *store = g_list_store_new(G_TYPE_OBJECT);
-    GtkSingleSelection *selection_model = gtk_single_selection_new(G_LIST_MODEL(store));
+    GtkListStore *store = gtk_list_store_new(5, 
+        G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, 
+        G_TYPE_STRING, G_TYPE_STRING);
     
-    GtkWidget *list_view = gtk_list_view_new(GTK_SELECTION_MODEL(selection_model), NULL);
-    g_object_unref(selection_model);
-    
+    GtkTreeIter iter;
     for (int i = 0; i < num_students; i++) {
-        GObject *item = g_object_new(G_TYPE_OBJECT, NULL);
-        g_list_store_append(store, item);
-        g_object_unref(item);
+        gtk_list_store_append(store, &iter);
+        gtk_list_store_set(store, &iter,
+            0, students[i].first_name,
+            1, students[i].last_name,
+            2, students[i].gender,
+            3, students[i].elementary_school,
+            4, students[i].bg_gutachten,
+            -1);
     }
     
+    GtkWidget *treeview = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
     g_object_unref(store);
     
-    GtkWidget *column_view = gtk_column_view_new(GTK_SELECTION_MODEL(selection_model));
     const char *columns[] = {"Vorname", "Nachname", "Geschlecht", "Grundschule", "BG-Gutachten"};
-    
     for (int i = 0; i < 5; i++) {
-        GtkColumnViewColumn *column = gtk_column_view_column_new(columns[i], NULL);
-        gtk_column_view_append_column(GTK_COLUMN_VIEW(column_view), column);
+        GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+        GtkTreeViewColumn *column = gtk_tree_view_column_new();
+        gtk_tree_view_column_set_title(column, columns[i]);
+        gtk_tree_view_column_pack_start(column, renderer, TRUE);
+        gtk_tree_view_column_add_attribute(column, renderer, "text", i);
+        gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), column);
     }
     
-    gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scrolled_window), column_view);
+    gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scrolled_window), treeview);
     return scrolled_window;
 }
 
@@ -859,11 +866,27 @@ static void update_tabs(GtkNotebook *notebook, Student *students, int num_studen
         gtk_notebook_remove_page(notebook, 0);
     }
     
+    if (students == NULL || num_students == 0) {
+        show_error_dialog(NULL, "Keine Schülerdaten verfügbar.");
+        return;
+    }
+    
+    // Distribute students into classes
+    Student ***classes = NULL;
+    int *class_sizes = NULL;
+    
+    if (rules && rules->len > 0) {
+        distribute_students_with_rules(students, num_students, 
+            (Rule*)rules->data, rules->len, num_classes, &classes, &class_sizes);
+    } else {
+        distribute_students_optimized(students, num_students, num_classes, &classes, &class_sizes);
+    }
+    
     // Add tabs for each class
     for (int i = 0; i < num_classes; i++) {
         char *label = g_strdup_printf("Klasse %d", i + 1);
         GtkWidget *scrolled_window = gtk_scrolled_window_new();
-        GtkWidget *treeview = create_student_treeview(students, num_students);
+        GtkWidget *treeview = create_student_treeview(classes[i], class_sizes[i]);
         gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scrolled_window), treeview);
         gtk_notebook_append_page(notebook, scrolled_window, gtk_label_new(label));
         g_free(label);
@@ -873,10 +896,32 @@ static void update_tabs(GtkNotebook *notebook, Student *students, int num_studen
     GtkWidget *stats_frame = gtk_frame_new("Klassenstatistiken");
     GtkWidget *stats_textview = gtk_text_view_new();
     gtk_text_view_set_editable(GTK_TEXT_VIEW(stats_textview), FALSE);
+    
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(stats_textview));
+    GtkTextIter iter;
+    gtk_text_buffer_get_start_iter(buffer, &iter);
+    
+    // Add statistics for each class
+    for (int i = 0; i < num_classes; i++) {
+        char *stats = compute_stats(classes[i], class_sizes[i]);
+        char *header = g_strdup_printf("\nKlasse %d:\n", i + 1);
+        gtk_text_buffer_insert(buffer, &iter, header, -1);
+        gtk_text_buffer_insert(buffer, &iter, stats, -1);
+        g_free(header);
+        g_free(stats);
+    }
+    
     gtk_frame_set_child(GTK_FRAME(stats_frame), stats_textview);
     gtk_widget_set_margin_top(stats_frame, 5);
     gtk_widget_set_margin_bottom(stats_frame, 5);
     gtk_notebook_append_page(notebook, stats_frame, gtk_label_new("Statistiken"));
+    
+    // Clean up
+    for (int i = 0; i < num_classes; i++) {
+        free(classes[i]);
+    }
+    free(classes);
+    free(class_sizes);
     
     gtk_widget_set_visible(GTK_WIDGET(notebook), TRUE);
 }
@@ -918,11 +963,6 @@ static GtkWidget *create_sorter_window(GtkApplication *app, Student *students, i
     gtk_widget_set_margin_top(vbox, 5);
     gtk_widget_set_margin_bottom(vbox, 5);
     
-    GtkWidget *notebook = gtk_notebook_new();
-    gtk_box_append(GTK_BOX(vbox), notebook);
-    
-    gtk_window_set_child(GTK_WINDOW(window), vbox);
-    
     // Create rules array
     GArray *rules = g_array_new(FALSE, FALSE, sizeof(Rule));
     
@@ -935,6 +975,12 @@ static GtkWidget *create_sorter_window(GtkApplication *app, Student *students, i
     g_signal_connect(add_rule_button, "clicked", G_CALLBACK(add_rule_button_clicked), NULL);
     gtk_box_append(GTK_BOX(vbox), add_rule_button);
     
+    // Create notebook for class tabs
+    GtkWidget *notebook = gtk_notebook_new();
+    gtk_box_append(GTK_BOX(vbox), notebook);
+    
+    gtk_window_set_child(GTK_WINDOW(window), vbox);
+    
     // Set data for callbacks
     SorterWindow *sorter_window = g_new(SorterWindow, 1);
     sorter_window->window = window;
@@ -944,6 +990,9 @@ static GtkWidget *create_sorter_window(GtkApplication *app, Student *students, i
     sorter_window->students = students;
     sorter_window->num_students = num_students;
     g_object_set_data(G_OBJECT(add_rule_button), "sorter_window", sorter_window);
+    
+    // Update tabs with initial distribution
+    update_tabs(GTK_NOTEBOOK(notebook), students, num_students, rules, num_classes);
     
     return window;
 }
@@ -1004,6 +1053,11 @@ static void browse_button_clicked(GtkButton *button, gpointer user_data) {
         gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(file_chooser), home, NULL);
         g_object_unref(home);
     }
+    
+    // Set modal and transient for parent
+    gtk_window_set_modal(GTK_WINDOW(file_chooser), TRUE);
+    gtk_window_set_transient_for(GTK_WINDOW(file_chooser), 
+        gtk_widget_get_ancestor(entry, GTK_TYPE_WINDOW));
     
     g_object_set_data(G_OBJECT(file_chooser), "entry", entry);
     g_signal_connect(file_chooser, "response", G_CALLBACK(file_chooser_response), NULL);
