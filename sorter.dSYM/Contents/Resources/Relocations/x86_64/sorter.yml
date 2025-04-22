@@ -125,28 +125,28 @@ relocations:
   - { offsetInCU: 0x14B3, offset: 0x14B3, size: 0x8, addend: 0x0, symName: _file_chooser_response, symObjAddr: 0xEF0, symBinAddr: 0x100004930, symSize: 0x300 }
   - { offsetInCU: 0x1557, offset: 0x1557, size: 0x8, addend: 0x0, symName: _show_error_dialog, symObjAddr: 0x11F0, symBinAddr: 0x100004C30, symSize: 0x50 }
   - { offsetInCU: 0x159B, offset: 0x159B, size: 0x8, addend: 0x0, symName: _load_students, symObjAddr: 0x1240, symBinAddr: 0x100004C80, symSize: 0x1DF0 }
-  - { offsetInCU: 0x17A5, offset: 0x17A5, size: 0x8, addend: 0x0, symName: _create_sorter_window, symObjAddr: 0x3030, symBinAddr: 0x100006A70, symSize: 0x430 }
-  - { offsetInCU: 0x1867, offset: 0x1867, size: 0x8, addend: 0x0, symName: _str_dup, symObjAddr: 0x3460, symBinAddr: 0x100006EA0, symSize: 0x70 }
-  - { offsetInCU: 0x189D, offset: 0x189D, size: 0x8, addend: 0x0, symName: _str_trim, symObjAddr: 0x34D0, symBinAddr: 0x100006F10, symSize: 0x340 }
-  - { offsetInCU: 0x18E1, offset: 0x18E1, size: 0x8, addend: 0x0, symName: _str_equal_ignore_case, symObjAddr: 0x3810, symBinAddr: 0x100007250, symSize: 0x290 }
-  - { offsetInCU: 0x1917, offset: 0x1917, size: 0x8, addend: 0x0, symName: _str_equal_case, symObjAddr: 0x3AA0, symBinAddr: 0x1000074E0, symSize: 0x60 }
-  - { offsetInCU: 0x194D, offset: 0x194D, size: 0x8, addend: 0x0, symName: _add_rule_button_clicked, symObjAddr: 0x3B00, symBinAddr: 0x100007540, symSize: 0x200 }
-  - { offsetInCU: 0x1991, offset: 0x1991, size: 0x8, addend: 0x0, symName: _update_tabs, symObjAddr: 0x3D00, symBinAddr: 0x100007740, symSize: 0xED0 }
-  - { offsetInCU: 0x1B35, offset: 0x1B35, size: 0x8, addend: 0x0, symName: _open_add_rule_dialog, symObjAddr: 0x4BD0, symBinAddr: 0x100008610, symSize: 0x720 }
-  - { offsetInCU: 0x1CCF, offset: 0x1CCF, size: 0x8, addend: 0x0, symName: _add_rule_dialog_response, symObjAddr: 0x52F0, symBinAddr: 0x100008D30, symSize: 0x440 }
-  - { offsetInCU: 0x1DE5, offset: 0x1DE5, size: 0x8, addend: 0x0, symName: _G_LIST_MODEL, symObjAddr: 0x5730, symBinAddr: 0x100009170, symSize: 0x30 }
-  - { offsetInCU: 0x1E0D, offset: 0x1E0D, size: 0x8, addend: 0x0, symName: _GTK_DROP_DOWN, symObjAddr: 0x5760, symBinAddr: 0x1000091A0, symSize: 0x30 }
-  - { offsetInCU: 0x1E35, offset: 0x1E35, size: 0x8, addend: 0x0, symName: _update_rule_textview, symObjAddr: 0x5790, symBinAddr: 0x1000091D0, symSize: 0x380 }
-  - { offsetInCU: 0x1EDB, offset: 0x1EDB, size: 0x8, addend: 0x0, symName: _distribute_students_optimized, symObjAddr: 0x7B60, symBinAddr: 0x10000B5A0, symSize: 0x600 }
-  - { offsetInCU: 0x1FD0, offset: 0x1FD0, size: 0x8, addend: 0x0, symName: _create_student_treeview, symObjAddr: 0x8160, symBinAddr: 0x10000BBA0, symSize: 0x8D0 }
-  - { offsetInCU: 0x20E1, offset: 0x20E1, size: 0x8, addend: 0x0, symName: _compute_stats, symObjAddr: 0x8A30, symBinAddr: 0x10000C470, symSize: 0xB20 }
-  - { offsetInCU: 0x22D1, offset: 0x22D1, size: 0x8, addend: 0x0, symName: _union_find_init, symObjAddr: 0x9550, symBinAddr: 0x10000CF90, symSize: 0x180 }
-  - { offsetInCU: 0x231F, offset: 0x231F, size: 0x8, addend: 0x0, symName: _union_find_union, symObjAddr: 0x96D0, symBinAddr: 0x10000D110, symSize: 0xE0 }
-  - { offsetInCU: 0x237B, offset: 0x237B, size: 0x8, addend: 0x0, symName: _union_find_find, symObjAddr: 0x97B0, symBinAddr: 0x10000D1F0, symSize: 0x260 }
-  - { offsetInCU: 0x23B1, offset: 0x23B1, size: 0x8, addend: 0x0, symName: _compute_group_cost, symObjAddr: 0x9A10, symBinAddr: 0x10000D450, symSize: 0x80 }
-  - { offsetInCU: 0x2434, offset: 0x2434, size: 0x8, addend: 0x0, symName: _union_find_free, symObjAddr: 0x9A90, symBinAddr: 0x10000D4D0, symSize: 0xE0 }
-  - { offsetInCU: 0x2458, offset: 0x2458, size: 0x8, addend: 0x0, symName: _compute_cost, symObjAddr: 0x9B70, symBinAddr: 0x10000D5B0, symSize: 0x4E0 }
-  - { offsetInCU: 0x2545, offset: 0x2545, size: 0x8, addend: 0x0, symName: _str_is_empty, symObjAddr: 0xA050, symBinAddr: 0x10000DA90, symSize: 0x80 }
-  - { offsetInCU: 0x256D, offset: 0x256D, size: 0x8, addend: 0x0, symName: _shuffle_students, symObjAddr: 0xA0D0, symBinAddr: 0x10000DB10, symSize: 0x220 }
-  - { offsetInCU: 0x25F3, offset: 0x25F3, size: 0x8, addend: 0x0, symName: _free_students, symObjAddr: 0xA2F0, symBinAddr: 0x10000DD30, symSize: 0x1B0 }
+  - { offsetInCU: 0x17AA, offset: 0x17AA, size: 0x8, addend: 0x0, symName: _create_sorter_window, symObjAddr: 0x3030, symBinAddr: 0x100006A70, symSize: 0x430 }
+  - { offsetInCU: 0x186C, offset: 0x186C, size: 0x8, addend: 0x0, symName: _str_dup, symObjAddr: 0x3460, symBinAddr: 0x100006EA0, symSize: 0x70 }
+  - { offsetInCU: 0x18A2, offset: 0x18A2, size: 0x8, addend: 0x0, symName: _str_trim, symObjAddr: 0x34D0, symBinAddr: 0x100006F10, symSize: 0x340 }
+  - { offsetInCU: 0x18E6, offset: 0x18E6, size: 0x8, addend: 0x0, symName: _str_equal_ignore_case, symObjAddr: 0x3810, symBinAddr: 0x100007250, symSize: 0x290 }
+  - { offsetInCU: 0x191C, offset: 0x191C, size: 0x8, addend: 0x0, symName: _str_equal_case, symObjAddr: 0x3AA0, symBinAddr: 0x1000074E0, symSize: 0x60 }
+  - { offsetInCU: 0x1952, offset: 0x1952, size: 0x8, addend: 0x0, symName: _add_rule_button_clicked, symObjAddr: 0x3B00, symBinAddr: 0x100007540, symSize: 0x200 }
+  - { offsetInCU: 0x1996, offset: 0x1996, size: 0x8, addend: 0x0, symName: _update_tabs, symObjAddr: 0x3D00, symBinAddr: 0x100007740, symSize: 0xED0 }
+  - { offsetInCU: 0x1B3A, offset: 0x1B3A, size: 0x8, addend: 0x0, symName: _open_add_rule_dialog, symObjAddr: 0x4BD0, symBinAddr: 0x100008610, symSize: 0x720 }
+  - { offsetInCU: 0x1CD4, offset: 0x1CD4, size: 0x8, addend: 0x0, symName: _add_rule_dialog_response, symObjAddr: 0x52F0, symBinAddr: 0x100008D30, symSize: 0x440 }
+  - { offsetInCU: 0x1DEA, offset: 0x1DEA, size: 0x8, addend: 0x0, symName: _G_LIST_MODEL, symObjAddr: 0x5730, symBinAddr: 0x100009170, symSize: 0x30 }
+  - { offsetInCU: 0x1E12, offset: 0x1E12, size: 0x8, addend: 0x0, symName: _GTK_DROP_DOWN, symObjAddr: 0x5760, symBinAddr: 0x1000091A0, symSize: 0x30 }
+  - { offsetInCU: 0x1E3A, offset: 0x1E3A, size: 0x8, addend: 0x0, symName: _update_rule_textview, symObjAddr: 0x5790, symBinAddr: 0x1000091D0, symSize: 0x380 }
+  - { offsetInCU: 0x1EE0, offset: 0x1EE0, size: 0x8, addend: 0x0, symName: _distribute_students_optimized, symObjAddr: 0x7B60, symBinAddr: 0x10000B5A0, symSize: 0x600 }
+  - { offsetInCU: 0x1FD5, offset: 0x1FD5, size: 0x8, addend: 0x0, symName: _create_student_treeview, symObjAddr: 0x8160, symBinAddr: 0x10000BBA0, symSize: 0x8D0 }
+  - { offsetInCU: 0x20E6, offset: 0x20E6, size: 0x8, addend: 0x0, symName: _compute_stats, symObjAddr: 0x8A30, symBinAddr: 0x10000C470, symSize: 0xB20 }
+  - { offsetInCU: 0x22D6, offset: 0x22D6, size: 0x8, addend: 0x0, symName: _union_find_init, symObjAddr: 0x9550, symBinAddr: 0x10000CF90, symSize: 0x180 }
+  - { offsetInCU: 0x2324, offset: 0x2324, size: 0x8, addend: 0x0, symName: _union_find_union, symObjAddr: 0x96D0, symBinAddr: 0x10000D110, symSize: 0xE0 }
+  - { offsetInCU: 0x2380, offset: 0x2380, size: 0x8, addend: 0x0, symName: _union_find_find, symObjAddr: 0x97B0, symBinAddr: 0x10000D1F0, symSize: 0x260 }
+  - { offsetInCU: 0x23B6, offset: 0x23B6, size: 0x8, addend: 0x0, symName: _compute_group_cost, symObjAddr: 0x9A10, symBinAddr: 0x10000D450, symSize: 0x80 }
+  - { offsetInCU: 0x2439, offset: 0x2439, size: 0x8, addend: 0x0, symName: _union_find_free, symObjAddr: 0x9A90, symBinAddr: 0x10000D4D0, symSize: 0xE0 }
+  - { offsetInCU: 0x245D, offset: 0x245D, size: 0x8, addend: 0x0, symName: _compute_cost, symObjAddr: 0x9B70, symBinAddr: 0x10000D5B0, symSize: 0x4E0 }
+  - { offsetInCU: 0x254A, offset: 0x254A, size: 0x8, addend: 0x0, symName: _str_is_empty, symObjAddr: 0xA050, symBinAddr: 0x10000DA90, symSize: 0x80 }
+  - { offsetInCU: 0x2572, offset: 0x2572, size: 0x8, addend: 0x0, symName: _shuffle_students, symObjAddr: 0xA0D0, symBinAddr: 0x10000DB10, symSize: 0x220 }
+  - { offsetInCU: 0x25F8, offset: 0x25F8, size: 0x8, addend: 0x0, symName: _free_students, symObjAddr: 0xA2F0, symBinAddr: 0x10000DD30, symSize: 0x1B0 }
 ...

@@ -10,10 +10,6 @@
 #include <windows.h>
 #endif
 
-#ifdef _WIN32
-#include <objbase.h>    // for OleInitialize, OleUninitialize
-#endif
-
 // ===========================
 // Data Model and Helper Types
 // ===========================
@@ -627,40 +623,40 @@ static char *compute_stats(Student *class_students, int num_students) {
         
         // Elementary school count
         if (class_students[i].elementary_school != NULL) {
-            int gs_idx = -1;
-            for (int j = 0; j < grundschule_size; j++) {
+        int gs_idx = -1;
+        for (int j = 0; j < grundschule_size; j++) {
                 if (str_equal_ignore_case(grundschule_keys[j], class_students[i].elementary_school)) {
-                    gs_idx = j;
-                    break;
-                }
+                gs_idx = j;
+                break;
             }
-            
-            if (gs_idx == -1) {
+        }
+        
+        if (gs_idx == -1) {
                 grundschule_keys[grundschule_size] = str_dup(class_students[i].elementary_school);
-                gs_idx = grundschule_size;
-                grundschule_size++;
-            }
-            
-            grundschule_counts[gs_idx]++;
+            gs_idx = grundschule_size;
+            grundschule_size++;
+        }
+        
+        grundschule_counts[gs_idx]++;
         }
         
         // BG Gutachten count
         if (class_students[i].bg_gutachten != NULL) {
-            int bg_idx = -1;
-            for (int j = 0; j < bg_size; j++) {
+        int bg_idx = -1;
+        for (int j = 0; j < bg_size; j++) {
                 if (str_equal_ignore_case(bg_keys[j], class_students[i].bg_gutachten)) {
-                    bg_idx = j;
-                    break;
-                }
+                bg_idx = j;
+                break;
             }
-            
-            if (bg_idx == -1) {
+        }
+        
+        if (bg_idx == -1) {
                 bg_keys[bg_size] = str_dup(class_students[i].bg_gutachten);
-                bg_idx = bg_size;
-                bg_size++;
-            }
-            
-            bg_counts[bg_idx]++;
+            bg_idx = bg_size;
+            bg_size++;
+        }
+        
+        bg_counts[bg_idx]++;
         }
     }
     
@@ -723,7 +719,7 @@ static GtkWidget *create_student_treeview(Student *students, int num_students) {
         G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, 
         G_TYPE_STRING, G_TYPE_STRING);
     
-    GtkTreeIter iter;
+        GtkTreeIter iter;
     for (int i = 0; i < num_students; i++) {
         Student *student = &students[i];
         if (!student) continue;
@@ -735,7 +731,7 @@ static GtkWidget *create_student_treeview(Student *students, int num_students) {
             2, student->gender ? student->gender : "",
             3, student->elementary_school ? student->elementary_school : "",
             4, student->bg_gutachten ? student->bg_gutachten : "",
-            -1);
+                         -1);
     }
     
     GtkWidget *treeview = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
@@ -791,16 +787,16 @@ static void add_rule_dialog_response(GtkDialog *dialog, int response, gpointer u
             update_rule_textview(GTK_TEXT_VIEW(rule_textview), rules);
             update_tabs_callback(notebook, students, num_students, rules, 0);
         }
-        
-        g_free(name_a);
-        g_free(name_b);
-    }
+            
+            g_free(name_a);
+            g_free(name_b);
+        }
     gtk_window_destroy(GTK_WINDOW(dialog));
 }
 
 static void open_add_rule_dialog(GtkWindow *parent, Student *students, int num_students, 
-                               GArray *rules, GtkWidget *rule_textview, GtkNotebook *notebook,
-                               void (*update_tabs_callback)(GtkNotebook*, Student*, int, GArray*, int)) {
+                              GArray *rules, GtkWidget *rule_textview, GtkNotebook *notebook,
+                              void (*update_tabs_callback)(GtkNotebook*, Student*, int, GArray*, int)) {
     GtkWidget *dialog = gtk_window_new();
     gtk_window_set_title(GTK_WINDOW(dialog), "Regel hinzufügen");
     gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
@@ -912,13 +908,13 @@ static void update_tabs(GtkNotebook *notebook, Student *students, int num_studen
         gtk_notebook_append_page(notebook, scrolled_window, gtk_label_new(label));
         g_free(label);
     }
-    
+        
     // Add statistics tab
     GtkWidget *stats_frame = gtk_frame_new("Klassenstatistiken");
-    GtkWidget *stats_textview = gtk_text_view_new();
+        GtkWidget *stats_textview = gtk_text_view_new();
     gtk_text_view_set_editable(GTK_TEXT_VIEW(stats_textview), FALSE);
     
-    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(stats_textview));
+        GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(stats_textview));
     GtkTextIter iter;
     gtk_text_buffer_get_start_iter(buffer, &iter);
     
@@ -936,9 +932,9 @@ static void update_tabs(GtkNotebook *notebook, Student *students, int num_studen
         }
     }
     
-    gtk_frame_set_child(GTK_FRAME(stats_frame), stats_textview);
-    gtk_widget_set_margin_top(stats_frame, 5);
-    gtk_widget_set_margin_bottom(stats_frame, 5);
+        gtk_frame_set_child(GTK_FRAME(stats_frame), stats_textview);
+        gtk_widget_set_margin_top(stats_frame, 5);
+        gtk_widget_set_margin_bottom(stats_frame, 5);
     gtk_notebook_append_page(notebook, stats_frame, gtk_label_new("Statistiken"));
     
     // Clean up
@@ -1027,72 +1023,30 @@ static GtkWidget *create_sorter_window(GtkApplication *app, Student *students, i
 // ===========================
 
 static void file_chooser_response(GtkDialog *dialog, int response, gpointer user_data) {
-    g_print("File chooser response: %d\n", response);
-    
     if (response == GTK_RESPONSE_ACCEPT) {
-        g_print("User accepted file selection\n");
-        
         GtkFileChooser *chooser = GTK_FILE_CHOOSER(dialog);
-        if (!chooser) {
-            g_print("Error: chooser is NULL\n");
-            return;
-        }
-        
-        GFile *file = gtk_file_chooser_get_file(chooser);
-        if (!file) {
-            g_print("Error: file is NULL\n");
-            return;
-        }
-        
-        char *path = g_file_get_path(file);
-        if (!path) {
-            g_print("Error: path is NULL\n");
-            g_object_unref(file);
-            return;
-        }
-        
-        g_print("Selected file path: %s\n", path);
-        
-        // Convert Windows backslashes to forward slashes for consistency
-        for (char *p = path; *p; p++) {
-            if (*p == '\\') *p = '/';
-        }
-        
         GtkWidget *entry = user_data;
-        if (!entry) {
-            g_print("Error: entry widget is NULL\n");
-            g_free(path);
-            g_object_unref(file);
-            return;
+        
+        g_autoptr(GFile) file = gtk_file_chooser_get_file(chooser);
+        if (file) {
+            char *path = g_file_get_path(file);
+            if (path) {
+                // Convert Windows backslashes to forward slashes for consistency
+                for (char *p = path; *p; p++) {
+                    if (*p == '\\') *p = '/';
+                }
+                gtk_editable_set_text(GTK_EDITABLE(entry), path);
+                g_free(path);
+            }
         }
-        
-        g_print("Setting entry text to: %s\n", path);
-        gtk_editable_set_text(GTK_EDITABLE(entry), path);
-        
-        g_free(path);
-        g_object_unref(file);
     }
     gtk_window_destroy(GTK_WINDOW(dialog));
 }
 
 static void browse_button_clicked(GtkButton *button, gpointer user_data) {
-    g_print("Browse button clicked\n");
-    
     GtkWidget *entry = user_data;
-    if (!entry) {
-        g_print("Error: entry widget is NULL\n");
-        return;
-    }
-    g_print("Entry widget is valid\n");
-    
     GtkWidget *window = gtk_widget_get_ancestor(GTK_WIDGET(button), GTK_TYPE_WINDOW);
-    if (!window) {
-        g_print("Error: could not get parent window\n");
-        return;
-    }
-    g_print("Parent window is valid\n");
     
-    g_print("Creating file chooser dialog...\n");
     GtkWidget *dialog = gtk_file_chooser_dialog_new(
         "Datei auswählen",
         GTK_WINDOW(window),
@@ -1102,58 +1056,8 @@ static void browse_button_clicked(GtkButton *button, gpointer user_data) {
         NULL
     );
     
-    if (!dialog) {
-        g_print("Error: could not create file chooser dialog\n");
-        return;
-    }
-    g_print("File chooser dialog created successfully\n");
-
-#ifdef _WIN32
-    // Disable native file chooser to avoid COM issues
-    gtk_file_chooser_set_use_native(GTK_FILE_CHOOSER(dialog), FALSE);
-#endif
-    
-    g_print("Setting up file filters...\n");
-    GtkFileFilter *filter = gtk_file_filter_new();
-    if (filter) {
-        g_print("Creating CSV filter...\n");
-        gtk_file_filter_set_name(filter, "CSV Dateien");
-        gtk_file_filter_add_pattern(filter, "*.csv");
-        gtk_file_filter_add_pattern(filter, "*.CSV");
-        g_print("Setting CSV filter...\n");
-        gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(dialog), filter);
-        g_print("CSV filter set successfully\n");
-    } else {
-        g_print("Error: could not create CSV filter\n");
-    }
-    
-    g_print("Creating all files filter...\n");
-    filter = gtk_file_filter_new();
-    if (filter) {
-        gtk_file_filter_set_name(filter, "Alle Dateien");
-        gtk_file_filter_add_pattern(filter, "*");
-        g_print("Adding all files filter...\n");
-        gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
-        g_print("All files filter set successfully\n");
-    } else {
-        g_print("Error: could not create all files filter\n");
-    }
-    
-    g_print("Setting dialog as modal...\n");
-    gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
-    g_print("Dialog set as modal\n");
-    
-    g_print("Setting dialog as transient...\n");
-    gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(window));
-    g_print("Dialog set as transient\n");
-    
-    g_print("Connecting response signal...\n");
+    gtk_window_present(GTK_WINDOW(dialog));
     g_signal_connect(dialog, "response", G_CALLBACK(file_chooser_response), entry);
-    g_print("Response signal connected\n");
-    
-    g_print("Showing dialog...\n");
-    gtk_widget_set_visible(dialog, TRUE);
-    g_print("Dialog shown\n");
 }
 
 // ===========================
@@ -1264,13 +1168,9 @@ static void app_shutdown(GtkApplication *app, gpointer user_data) {
 }
 
 int main(int argc, char *argv[]) {
-#ifdef _WIN32
-    // Initialize OLE/COM for IFileOpenDialog
-    HRESULT hr = OleInitialize(NULL);
-    if (FAILED(hr)) {
-        fprintf(stderr, "OleInitialize failed: 0x%08lx\n", hr);
-        // you can choose to abort here...
-    }
+#ifdef GDK_WINDOWING_WIN32
+    // initialize COM for the native file-chooser
+    CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 #endif
 
     GtkApplication *app = gtk_application_new("com.example.schoolsort", G_APPLICATION_DEFAULT_FLAGS);
@@ -1280,9 +1180,9 @@ int main(int argc, char *argv[]) {
     int status = g_application_run(G_APPLICATION(app), argc, argv);
     g_object_unref(app);
 
-#ifdef _WIN32
-    OleUninitialize();
+#ifdef GDK_WINDOWING_WIN32
+    CoUninitialize();
 #endif
-
+    
     return status;
 }
