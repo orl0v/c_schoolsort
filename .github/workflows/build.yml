@@ -30,7 +30,7 @@ jobs:
     - name: Build
       shell: msys2 {0}
       run: |
-        gcc sorter.c -o sorter.exe `pkg-config --cflags --libs gtk4` -mwindows
+        gcc sorter.c -o sorter.exe `pkg-config --cflags --libs gtk4` -mwindows -lole32
         
     - name: Copy DLLs
       shell: msys2 {0}

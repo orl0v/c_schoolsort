@@ -6,13 +6,8 @@
 #include <stdbool.h>
 #include <time.h>
 
-#if GTK_MAJOR_VERSION == 3
-// gtk_file_chooser_set_use_native() exists only in GTK3
-#define MAYBE_DISABLE_NATIVE_FILECHOOSER(dlg, flag) \
-    gtk_file_chooser_set_use_native(GTK_FILE_CHOOSER(dlg), flag)
-#else
-// on GTK4 it's a no-op
-#define MAYBE_DISABLE_NATIVE_FILECHOOSER(dlg, flag) /* nothing */
+#ifdef GDK_WINDOWING_WIN32
+#include <windows.h>
 #endif
 
 // ===========================
@@ -1103,9 +1098,6 @@ static void browse_button_clicked(GtkButton *button, gpointer user_data) {
         NULL
     );
     
-    // disable the native dialog on GTK3 only; on GTK4 this macro does nothing
-    MAYBE_DISABLE_NATIVE_FILECHOOSER(dialog, FALSE);
-    
     if (!dialog) {
         g_print("Error: could not create file chooser dialog\n");
         return;
@@ -1263,12 +1255,21 @@ static void app_shutdown(GtkApplication *app, gpointer user_data) {
 }
 
 int main(int argc, char *argv[]) {
+#ifdef GDK_WINDOWING_WIN32
+    // initialize COM for the native file-chooser
+    CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+#endif
+
     GtkApplication *app = gtk_application_new("com.example.schoolsort", G_APPLICATION_DEFAULT_FLAGS);
     g_signal_connect(app, "activate", G_CALLBACK(app_activate), NULL);
     g_signal_connect(app, "shutdown", G_CALLBACK(app_shutdown), NULL);
     
     int status = g_application_run(G_APPLICATION(app), argc, argv);
     g_object_unref(app);
-    
+
+#ifdef GDK_WINDOWING_WIN32
+    CoUninitialize();
+#endif
+
     return status;
 }
