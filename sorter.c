@@ -6,6 +6,15 @@
 #include <stdbool.h>
 #include <time.h>
 
+#if GTK_MAJOR_VERSION == 3
+// gtk_file_chooser_set_use_native() exists only in GTK3
+#define MAYBE_DISABLE_NATIVE_FILECHOOSER(dlg, flag) \
+    gtk_file_chooser_set_use_native(GTK_FILE_CHOOSER(dlg), flag)
+#else
+// on GTK4 it's a no-op
+#define MAYBE_DISABLE_NATIVE_FILECHOOSER(dlg, flag) /* nothing */
+#endif
+
 // ===========================
 // Data Model and Helper Types
 // ===========================
@@ -1093,6 +1102,9 @@ static void browse_button_clicked(GtkButton *button, gpointer user_data) {
         "Öffnen", GTK_RESPONSE_ACCEPT,
         NULL
     );
+    
+    // disable the native dialog on GTK3 only; on GTK4 this macro does nothing
+    MAYBE_DISABLE_NATIVE_FILECHOOSER(dialog, FALSE);
     
     if (!dialog) {
         g_print("Error: could not create file chooser dialog\n");
