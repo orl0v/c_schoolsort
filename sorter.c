@@ -960,6 +960,10 @@ static void file_chooser_response(GtkDialog *dialog, int response, gpointer user
         if (file) {
             char *path = g_file_get_path(file);
             if (path) {
+                // Convert Windows backslashes to forward slashes for consistency
+                for (char *p = path; *p; p++) {
+                    if (*p == '\\') *p = '/';
+                }
                 gtk_editable_set_text(GTK_EDITABLE(entry), path);
                 g_free(path);
             }
@@ -979,6 +983,27 @@ static void browse_button_clicked(GtkButton *button, gpointer user_data) {
         "Öffnen", GTK_RESPONSE_ACCEPT,
         NULL
     );
+    
+    // Set up file filters for CSV files
+    GtkFileFilter *filter = gtk_file_filter_new();
+    gtk_file_filter_set_name(filter, "CSV Dateien");
+    gtk_file_filter_add_pattern(filter, "*.csv");
+    gtk_file_filter_add_pattern(filter, "*.CSV");
+    gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(file_chooser), filter);
+    
+    // Add a filter for all files
+    filter = gtk_file_filter_new();
+    gtk_file_filter_set_name(filter, "Alle Dateien");
+    gtk_file_filter_add_pattern(filter, "*");
+    gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(file_chooser), filter);
+    
+    // Set the current directory to the user's home directory
+    const char *home_dir = g_get_home_dir();
+    if (home_dir) {
+        GFile *home = g_file_new_for_path(home_dir);
+        gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(file_chooser), home, NULL);
+        g_object_unref(home);
+    }
     
     g_object_set_data(G_OBJECT(file_chooser), "entry", entry);
     g_signal_connect(file_chooser, "response", G_CALLBACK(file_chooser_response), NULL);
