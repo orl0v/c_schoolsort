@@ -608,59 +608,52 @@ static char *compute_stats(Student *class_students, int num_students) {
     int bg_size = 0;
     
     for (int i = 0; i < num_students; i++) {
-        Student *s = &class_students[i];
-        
         // Gender count
-        if (s->gender != NULL) {
-            char *gender = str_dup(s->gender);
-            str_trim(gender);
-            
-            if (str_equal_ignore_case(gender, "m")) {
+        if (class_students[i].gender != NULL) {
+            if (str_equal_ignore_case(class_students[i].gender, "m")) {
                 count_m++;
-            } else if (str_equal_ignore_case(gender, "w")) {
+            } else if (str_equal_ignore_case(class_students[i].gender, "w")) {
                 count_w++;
             }
-            
-            free(gender);
         }
         
         // Elementary school count
-        char *gs = str_is_empty(s->elementary_school) ? "Unknown" : s->elementary_school;
-        int gs_idx = -1;
-        
-        for (int j = 0; j < grundschule_size; j++) {
-            if (str_equal_ignore_case(grundschule_keys[j], gs)) {
-                gs_idx = j;
-                break;
+        if (class_students[i].elementary_school != NULL) {
+            int gs_idx = -1;
+            for (int j = 0; j < grundschule_size; j++) {
+                if (str_equal_ignore_case(grundschule_keys[j], class_students[i].elementary_school)) {
+                    gs_idx = j;
+                    break;
+                }
             }
+            
+            if (gs_idx == -1) {
+                grundschule_keys[grundschule_size] = str_dup(class_students[i].elementary_school);
+                gs_idx = grundschule_size;
+                grundschule_size++;
+            }
+            
+            grundschule_counts[gs_idx]++;
         }
-        
-        if (gs_idx == -1) {
-            grundschule_keys[grundschule_size] = str_dup(gs);
-            gs_idx = grundschule_size;
-            grundschule_size++;
-        }
-        
-        grundschule_counts[gs_idx]++;
         
         // BG Gutachten count
-        char *bg = str_is_empty(s->bg_gutachten) ? "Unknown" : s->bg_gutachten;
-        int bg_idx = -1;
-        
-        for (int j = 0; j < bg_size; j++) {
-            if (str_equal_ignore_case(bg_keys[j], bg)) {
-                bg_idx = j;
-                break;
+        if (class_students[i].bg_gutachten != NULL) {
+            int bg_idx = -1;
+            for (int j = 0; j < bg_size; j++) {
+                if (str_equal_ignore_case(bg_keys[j], class_students[i].bg_gutachten)) {
+                    bg_idx = j;
+                    break;
+                }
             }
+            
+            if (bg_idx == -1) {
+                bg_keys[bg_size] = str_dup(class_students[i].bg_gutachten);
+                bg_idx = bg_size;
+                bg_size++;
+            }
+            
+            bg_counts[bg_idx]++;
         }
-        
-        if (bg_idx == -1) {
-            bg_keys[bg_size] = str_dup(bg);
-            bg_idx = bg_size;
-            bg_size++;
-        }
-        
-        bg_counts[bg_idx]++;
     }
     
     // Build stats string
@@ -885,7 +878,7 @@ static void update_tabs(GtkNotebook *notebook, Student *students, int num_studen
     }
     
     // Distribute students into classes
-    Student ***classes = NULL;
+    Student **classes = NULL;
     int *class_sizes = NULL;
     
     if (rules && rules->len > 0) {
@@ -925,7 +918,7 @@ static void update_tabs(GtkNotebook *notebook, Student *students, int num_studen
     for (int i = 0; i < num_classes; i++) {
         if (!classes[i] || class_sizes[i] <= 0) continue;
         
-        char *stats = compute_stats(classes[i][0], class_sizes[i]);
+        char *stats = compute_stats(classes[i], class_sizes[i]);
         if (stats) {
             char *header = g_strdup_printf("\nKlasse %d:\n", i + 1);
             gtk_text_buffer_insert(buffer, &iter, header, -1);
