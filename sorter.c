@@ -252,7 +252,7 @@ static void load_students(const char *file_path, Student **students, int *num_st
     for (int i = 0; i < header_count; i++) {
         if (str_equal_ignore_case(headers[i], "Vorname")) col_vorname = i;
         else if (str_equal_ignore_case(headers[i], "Nachname")) col_nachname = i;
-        else if (str_equal_ignore_case(headers[i], "m/w")) col_gender = i;
+        else if (str_equal_case(headers[i], "m/w")) col_gender = i;
         else if (str_equal_case(headers[i], "Grundschule")) col_grundschule = i;
         else if (str_equal_case(headers[i], "BG Gutachten")) col_bg = i;
     }
@@ -925,7 +925,7 @@ static void update_tabs(GtkNotebook *notebook, Student *students, int num_studen
     for (int i = 0; i < num_classes; i++) {
         if (!classes[i] || class_sizes[i] <= 0) continue;
         
-        char *stats = compute_stats(classes[i], class_sizes[i]);
+        char *stats = compute_stats(classes[i][0], class_sizes[i]);
         if (stats) {
             char *header = g_strdup_printf("\nKlasse %d:\n", i + 1);
             gtk_text_buffer_insert(buffer, &iter, header, -1);
